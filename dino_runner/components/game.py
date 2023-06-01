@@ -102,17 +102,17 @@ class Game:
         half_screen_height = SCREEN_HEIGHT // 2
         half_screen_width = SCREEN_WIDTH // 2
         if self.death_count == 0:
-            draw_message_component("Aperte qualquer tecla para iniciar o jogo", self.screen, pos_y_center=half_screen_height + 150 )
+            draw_message_component("Press any key to start the game", self.screen, pos_y_center=half_screen_height + 150 )
             self.screen.blit(ICON, (half_screen_width - 50, half_screen_height - 130))
         else:
-            draw_message_component("Precione uma tecla para reiniciar o jogo", self.screen, pos_y_center=half_screen_height + 140)
+            draw_message_component("Press a key to restart the game", self.screen, pos_y_center=half_screen_height + 140)
             draw_message_component(
-                f"Sua pontuação: {self.score}",
+                f"your score: {self.score}",
                 self.screen,
                 pos_y_center=half_screen_height - 150
             )
             draw_message_component(
-                f"Contagem de mortes: {self.death_count}",
+                f"death count: {self.death_count}",
                 self.screen,
                 pos_y_center=half_screen_height - 100
             )

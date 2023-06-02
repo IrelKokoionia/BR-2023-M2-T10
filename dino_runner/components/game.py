@@ -1,12 +1,10 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.utils.text import draw_message_component
-
-
-FONT_STYLE = "freesansbold.ttf"
+from dino_runner.components.power_ups.Power_up_manager import PowerUpManager
 
 
 class Game:
@@ -26,9 +24,12 @@ class Game:
 
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
 
     def execute(self):
         self.running = True
+        self.obstacle_manager.reset_obstacles()
+        self.power_up_manager.reset_power_ups()
         while self.running:
             if not self.playing:
                 self.show_menu()
@@ -39,6 +40,7 @@ class Game:
         # Game loop: events - update - draw
         self.playing = True
         self.obstacle_manager.reset_obstacles()
+        #self.
         self.game_speed = 20
         self.score = 0
         while self.playing:
@@ -57,6 +59,7 @@ class Game:
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.update_score()
+        self.power_up_manager.update(self)
 
     def update_score(self):
         self.score += 1
@@ -70,6 +73,8 @@ class Game:
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.draw_score()
+        self.draw_power_up_time()
+        self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -89,6 +94,22 @@ class Game:
             pos_x_center=1000,
             pos_y_center=50
        ) 
+    
+    def draw_power_up_time(self):
+        if self.player.has_power_up:
+            time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
+            if time_to_show >= 0:
+                draw_message_component(
+                    f"{self.player.type.capitalize()} enabled for {time_to_show} seconds",
+                    self.screen,
+                    font_size = 18,
+                    pos_x_center = 500,
+                    pos_y_center = 40
+                )
+            else:
+                self.player.has_power_up = False
+                self.player.type = DEFAULT_TYPE
+
     def handle_events_on_menu(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

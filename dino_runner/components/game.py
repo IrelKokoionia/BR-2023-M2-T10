@@ -1,35 +1,36 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE, ICON_DEATH, ICON_MARIO_INICIO
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.utils.text import draw_message_component
-from dino_runner.components.power_ups.Power_up_manager import PowerUpManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+from dino_runner.components.sounds import Sounds
 
 
 class Game:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption(TITLE)
-        pygame.display.set_icon(ICON)
+        pygame.display.set_icon(ICON_MARIO_INICIO)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
         self.running = False
         self.game_speed = 20
         self.x_pos_bg = 0
-        self.y_pos_bg = 380
+        self.y_pos_bg = 0
         self.score = 0
         self.death_count = 0
 
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
         self.power_up_manager = PowerUpManager()
+        self.music = Sounds()
 
     def execute(self):
         self.running = True
-        self.obstacle_manager.reset_obstacles()
-        self.power_up_manager.reset_power_ups()
+        self.music.play_background_sound()
         while self.running:
             if not self.playing:
                 self.show_menu()
@@ -40,7 +41,9 @@ class Game:
         # Game loop: events - update - draw
         self.playing = True
         self.obstacle_manager.reset_obstacles()
-        #self.
+        self.power_up_manager.reset_power_ups()
+        self.player.setup_state()
+        self.player.type = DEFAULT_TYPE
         self.game_speed = 20
         self.score = 0
         while self.playing:
@@ -56,7 +59,7 @@ class Game:
 
     def update(self):
         user_input = pygame.key.get_pressed()
-        self.player.update(user_input)
+        self.player.update(user_input, self.game_speed, self.obstacle_manager.obstacles, self.music)
         self.obstacle_manager.update(self)
         self.update_score()
         self.power_up_manager.update(self)
@@ -107,6 +110,8 @@ class Game:
                     pos_y_center = 40
                 )
             else:
+                self.player.shield = False
+                self.player.hammer = False
                 self.player.has_power_up = False
                 self.player.type = DEFAULT_TYPE
 
@@ -137,7 +142,7 @@ class Game:
                 self.screen,
                 pos_y_center=half_screen_height - 100
             )
-            self.screen.blit(ICON, (half_screen_width - 60, half_screen_height - 50))
+            self.screen.blit(ICON_DEATH, (half_screen_width - 60, half_screen_height - 50))
 
         pygame.display.flip()
         self.handle_events_on_menu()

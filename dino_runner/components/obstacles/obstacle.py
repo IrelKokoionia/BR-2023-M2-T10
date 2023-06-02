@@ -5,11 +5,17 @@ from dino_runner.utils.constants import SCREEN_WIDTH
 
 
 class Obstacle(Sprite):
-    def __init__(self, image, type):
+    def __init__(self, image):
         self.image = image
-        self.type = type
-        self.rect = self.image[self.type].get_rect()
+        if type(self.image) == list:
+            self.rect = self.image[0].get_rect()
+            self.mask = pygame.mask.from_surface(self.image[0])
+        else:
+            self.rect = self.image.get_rect()
+            self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = SCREEN_WIDTH
+        self.step_index = 0
+
 
     def update(self, game_speed, obstacles):
         self.rect.x -= game_speed
@@ -18,4 +24,12 @@ class Obstacle(Sprite):
             obstacles.pop()
 
     def draw(self, screen):
-        screen.blit(self.image[self.type], (self.rect.x, self.rect.y))
+        if type(self.image) == list:
+            screen.blit(self.image[self.step_index // 5], self.rect)
+            self.step_index += 1
+
+            if self.step_index >= len(self.image) * 5 - 1:
+                self.step_index = 0
+        
+        else:
+            screen.blit(self.image, (self.rect.x, self.rect.y))

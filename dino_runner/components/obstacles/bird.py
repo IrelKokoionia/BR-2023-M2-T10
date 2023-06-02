@@ -1,18 +1,15 @@
 import random
 
-from dino_runner.utils.constants import BIRD
+from dino_runner.utils.constants import ENEMY_4_BIRD, ENEMY_5_BIRD
 from dino_runner.components.obstacles.obstacle import Obstacle
 
 
 class Bird(Obstacle):
+    BIRD = [
+        ENEMY_4_BIRD,
+        ENEMY_5_BIRD
+    ]
     def __init__(self):
-        super().__init__(BIRD, 0)
-        self.rect.y = random.randrange(235, 275)
-        self.step_index = 0
-    
-    def draw(self, screen):
-        screen.blit(self.image[self.step_index // 5], self.rect)
-        self.step_index += 1
-
-        if self.step_index >= 9:
-            self.step_index = 0
+        image = self.BIRD[random.randint(0, 1)]
+        super().__init__(image)
+        self.rect.y = random.randrange(185, 205)

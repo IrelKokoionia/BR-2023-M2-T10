@@ -1,17 +1,17 @@
 import random
 
 from dino_runner.components.obstacles.obstacle import Obstacle
-from dino_runner.utils.constants import SMALL_CACTUS, LARGE_CACTUS
+from dino_runner.utils.constants import ENEMY_1, ENEMY_2, ENEMY_3
 
 class Cactus(Obstacle):
 
     CACTUS = [
-        (SMALL_CACTUS, 325),
-        (LARGE_CACTUS, 300)
+        (ENEMY_1, 235),
+        (ENEMY_2, 235),
+        (ENEMY_3, 245)
     ]
 
     def __init__(self):
-        image, cactus_pos = self.CACTUS[random.randint(0, 1)]
-        self.type = random.randint(0, 2)
-        super().__init__(image, self.type)
+        image, cactus_pos = self.CACTUS[random.randint(0, 2)]
+        super().__init__(image)
         self.rect.y = cactus_pos
